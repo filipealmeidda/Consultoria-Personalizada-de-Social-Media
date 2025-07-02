@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz: Descubra Sua Consultoria Ideal de Social Media</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #4ecdc4 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 5px;
+            background: #f0f0f0;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .quiz-content {
+            padding: 40px;
+            text-align: center;
+        }
+
+        .welcome-screen h1 {
+            color: #333;
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-screen p {
+            color: #666;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .question h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+            text-align: left;
+        }
+
+        .option:hover {
+            border-color: #ff6b6b;
+            background: #fff5f5;
+            transform: translateY(-2px);
+        }
+
+        .option.selected {
+            border-color: #ff6b6b;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+        }
+
+        .start-btn, .next-btn {
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .start-btn:hover, .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .next-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .result {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .result h2 {
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .result-description {
+            color: #666;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .plan-details {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .plan-details h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .plan-details ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .plan-details li {
+            padding: 8px 0;
+            color: #555;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .plan-details li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4ecdc4;
+            font-weight: bold;
+        }
+
+        .cta-button {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 20px 50px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(40, 167, 69, 0.4);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+
+        .frequency-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        @media (max-width: 600px) {
+            .quiz-content {
+                padding: 20px;
+            }
+            
+            .welcome-screen h1 {
+                font-size: 1.8em;
+            }
+            
+            .question h2 {
+                font-size: 1.3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        
+        <div class="quiz-content">
+            <!-- Welcome Screen -->
+            <div id="welcomeScreen" class="welcome-screen">
+                <h1>🎯 Consultoria Personalizada de Social Media</h1>
+                <p>Descubra qual plano de consultoria é ideal para acelerar os resultados do seu negócio nas redes sociais. Análise completa + acompanhamento estratégico personalizado!</p>
+                <button class="start-btn" onclick="startQuiz()">Descobrir Meu Plano</button>
+            </div>
+
+            <!-- Questions -->
+            <div id="questionContainer" class="hidden">
+                <div class="question">
+                    <h2 id="questionText"></h2>
+                    <div class="options" id="optionsContainer"></div>
+                    <button class="next-btn" id="nextBtn" onclick="nextQuestion()" disabled>Próxima Pergunta</button>
+                </div>
+            </div>
+
+            <!-- Result Screen -->
+            <div id="resultScreen" class="hidden result">
+                <h2 id="resultTitle"></h2>
+                <div id="resultDescription" class="result-description"></div>
+                <div id="planDetails" class="plan-details"></div>
+                <a href="#" class="cta-button" id="ctaButton">💬 Quero Começar Minha Consultoria!</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "Há quanto tempo seu negócio está nas redes sociais?",
+                options: [
+                    { text: "🚀 Estou começando agora (0-3 meses)", value: "new" },
+                    { text: "📈 Tenho presença básica (3-12 meses)", value: "basic" },
+                    { text: "💼 Já estou há mais de 1 ano, mas sem estratégia", value: "existing" },
+                    { text: "⚡ Tenho estratégia, mas preciso otimizar", value: "optimizing" }
+                ]
+            },
+            {
+                question: "Qual sua principal dificuldade atual?",
+                options: [
+                    { text: "😵 Não sei como criar uma estratégia eficaz", value: "strategy" },
+                    { text: "📊 Tenho baixo engajamento e alcance", value: "engagement" },
+                    { text: "💰 Não consigo converter em vendas", value: "conversion" },
+                    { text: "⏰ Falta tempo para gerenciar tudo", value: "time" }
+                ]
+            },
+            {
+                question: "Qual o faturamento mensal do seu negócio?",
+                options: [
+                    { text: "💡 Ainda não faturo ou menos de R$ 5k", value: "starter" },
+                    { text: "📈 Entre R$ 5k e R$ 20k", value: "growing" },
+                    { text: "🚀 Entre R$ 20k e R$ 50k", value: "scaling" },
+                    { text: "💎 Acima de R$ 50k", value: "established" }
+                ]
+            },
+            {
+                question: "Com que urgência você precisa de resultados?",
+                options: [
+                    { text: "🔥 Preciso de resultados URGENTES (1-2 meses)", value: "urgent" },
+                    { text: "⚡ Quero resultados rápidos (2-4 meses)", value: "fast" },
+                    { text: "📈 Posso esperar resultados consistentes (4-6 meses)", value: "steady" },
+                    { text: "🌱 Foco em crescimento a longo prazo (6+ meses)", value: "longterm" }
+                ]
+            },
+            {
+                question: "Quanto você investe mensalmente em marketing digital?",
+                options: [
+                    { text: "💸 Nada ou muito pouco (até R$ 500)", value: "minimal" },
+                    { text: "💰 Investimento básico (R$ 500 - R$ 2k)", value: "basic_invest" },
+                    { text: "🎯 Investimento sério (R$ 2k - R$ 5k)", value: "serious" },
+                    { text: "🚀 Investimento alto (acima de R$ 5k)", value: "high_invest" }
+                ]
+            },
+            {
+                question: "Qual tipo de acompanhamento você prefere?",
+                options: [
+                    { text: "👀 Análise inicial + relatório mensal", value: "monthly" },
+                    { text: "🔄 Acompanhamento quinzenal + ajustes", value: "biweekly" },
+                    { text: "⚡ Acompanhamento semanal intensivo", value: "weekly" },
+                    { text: "🎯 Consultoria pontual + implementação", value: "project" }
+                ]
+            }
+        ];
+
+        const results = {
+            "intensive": {
+                title: "Plano Intensivo - Acompanhamento Semanal",
+                description: "Seu negócio precisa de atenção máxima! Com base no seu perfil, você se beneficiará de um acompanhamento intensivo para acelerar resultados.",
+                frequency: "Consultoria Semanal",
+                details: [
+                    "Análise completa da sua presença digital",
+                    "Estratégia personalizada para seu nicho",
+                    "Reuniões semanais de 1h para ajustes",
+                    "Monitoramento de métricas em tempo real",
+                    "Otimização contínua de campanhas",
+                    "Suporte via WhatsApp para dúvidas urgentes",
+                    "Relatórios semanais de performance"
+                ],
+                link: "https://seulink.com/consultoria-intensiva"
+            },
+            "accelerated": {
+                title: "Plano Acelerado - Acompanhamento Quinzenal",
+                description: "Perfeito para quem quer crescer rapidamente com acompanhamento estratégico regular.",
+                frequency: "Consultoria a cada 15 dias",
+                details: [
+                    "Auditoria completa das suas redes sociais",
+                    "Plano estratégico de 90 dias",
+                    "Reuniões quinzenais de 1h",
+                    "Análise de concorrentes",
+                    "Otimização de perfis e conteúdo",
+                    "Planejamento de campanhas",
+                    "Relatório quinzenal com insights"
+                ],
+                link: "https://seulink.com/consultoria-acelerada"
+            },
+            "strategic": {
+                title: "Plano Estratégico - Acompanhamento Mensal",
+                description: "Ideal para quem quer crescimento consistente com orientação estratégica mensal.",
+                frequency: "Consultoria Mensal",
+                details: [
+                    "Análise estratégica do seu mercado",
+                    "Plano de conteúdo personalizado",
+                    "Reunião mensal de 1h30",
+                    "Definição de metas e KPIs",
+                    "Orientações para implementação",
+                    "Análise de resultados mensais",
+                    "Ajustes de estratégia conforme necessário"
+                ],
+                link: "https://seulink.com/consultoria-estrategica"
+            },
+            "foundation": {
+                title: "Plano Fundação - Consultoria Pontual",
+                description: "Perfeito para quem está começando e precisa de uma base sólida para decolar.",
+                frequency: "Consultoria Inicial + Follow-ups",
+                details: [
+                    "Análise completa da situação atual",
+                    "Estratégia personalizada de 6 meses",
+                    "Sessão inicial de 2h de planejamento",
+                    "Cronograma detalhado de implementação",
+                    "Templates e materiais exclusivos",
+                    "2 sessões de follow-up (30 e 60 dias)",
+                    "Suporte por email por 90 dias"
+                ],
+                link: "https://seulink.com/consultoria-fundacao"
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = [];
+
+        function startQuiz() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('questionContainer').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('questionText').textContent = question.question;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                optionDiv.textContent = option.text;
+                optionDiv.onclick = () => selectOption(index, option.value);
+                optionsContainer.appendChild(optionDiv);
+            });
+
+            updateProgress();
+            document.getElementById('nextBtn').disabled = true;
+            
+            if (currentQuestion === questions.length - 1) {
+                document.getElementById('nextBtn').textContent = 'Ver Minha Consultoria Ideal';
+            }
+        }
+
+        function selectOption(index, value) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            document.querySelectorAll('.option')[index].classList.add('selected');
+            answers[currentQuestion] = value;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showResult() {
+            document.getElementById('questionContainer').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            
+            const resultKey = determineConsultingPlan();
+            const result = results[resultKey];
+            
+            document.getElementById('resultTitle').textContent = result.title;
+            document.getElementById('resultDescription').textContent = result.description;
+            document.getElementById('ctaButton').href = result.link;
+            
+            // Create plan details
+            const planDetailsHtml = `
+                <div class="frequency-badge">${result.frequency}</div>
+                <h3>O que inclui:</h3>
+                <ul>
+                    ${result.details.map(detail => `<li>${detail}</li>`).join('')}
+                </ul>
+            `;
+            document.getElementById('planDetails').innerHTML = planDetailsHtml;
+            
+            updateProgress();
+        }
+
+        function determineConsultingPlan() {
+            // Logic to determine which consulting plan fits best
+            const urgentNeeds = answers.includes('urgent') || answers.includes('fast');
+            const highInvestment = answers.includes('serious') || answers.includes('high_invest');
+            const establishedBusiness = answers.includes('scaling') || answers.includes('established');
+            const needsStrategy = answers.includes('strategy') || answers.includes('new');
+            const prefersTightSchedule = answers.includes('weekly') || answers.includes('biweekly');
+
+            if (urgentNeeds && highInvestment && prefersTightSchedule) {
+                return 'intensive';
+            } else if ((urgentNeeds || establishedBusiness) && (highInvestment || answers.includes('biweekly'))) {
+                return 'accelerated';
+            } else if (establishedBusiness || answers.includes('monthly')) {
+                return 'strategic';
+            } else {
+                return 'foundation';
+            }
+        }
+    </script>
+</body>
+</html>
